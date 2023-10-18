@@ -1,0 +1,102 @@
+.header {
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    background-color: #d3d3d3; 
+}
+  
+  .header input {
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 4px;
+    width: 70%;
+  }
+  
+  .header #btn-add {
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff; /* Nền trắng */
+     /* Màu chữ xanh */
+  }
+
+.list {
+    background-color: #f8f9fa; /* Màu nền nhẹ */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+
+.list li {
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #eee;
+    font-size: 18px;
+    transition: 0.2s;
+}
+#tasklist {
+    padding: 0;
+    list-style-type: none;
+    margin: 0;
+  }
+ul{
+    padding:0px;
+    list-style-type: none;
+}
+ul li:nth-child(odd) {
+    background: #f9f9f9;
+}
+
+ul li:hover {
+    cursor: pointer;
+    background: #ddd;
+}
+
+span.delete,span.edit{
+    float:right;
+    height: 100%;
+    cursor: pointer;
+    margin-right:10px;
+}
+
+ul li.checked {
+    background: #888;
+    color: #fff;
+    text-decoration: line-through;
+}
+
+ul li.checked::before {
+    content: '';
+    position: absolute;
+    border-color: #fff;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    top: 15px;
+    left: 16px;
+    transform: rotate(45deg);
+    height: 15px;
+    width: 7px;
+}
+
+button {
+    margin-top: 10px;
+    background-color: #dc3545; /* Đỏ sáng */
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+  }
+  
+button:hover {
+    background-color: #c82333;
+}
+
+#deleteAll{
+    display:none;
+}
