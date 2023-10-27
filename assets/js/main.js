@@ -2,19 +2,28 @@ const buttonAdd = document.getElementById("btn-add");
 const tasklist = document.getElementById("tasklist");
 let task = [];
 
-// document.addEventListener("DOMContentLoaded", function () {
-//   let todo = document.querySelectorAll("li");
-//     console.log(todo)
-//   todo.forEach((task, index) => {
-//     console.log(index)
-//     task.addEventListener("click", () => {
-//       task.classList.toggle("checked");
-//     });
-//   });
-// });
-var todo = document.querySelector("ul");
+const getElementAddEdit =() =>{
+  let deleteTask = document.querySelectorAll(".delete");
+  let editTask = document.querySelectorAll(".edit");
+  editTask.forEach((editButton) => {
+    editButton.addEventListener("click", editTaskHandler);
+  });
+
+  deleteTask.forEach((deleteButton) => {
+    deleteButton.addEventListener("click", deleteTaskHandler);
+  });
+}
+
+
+
+let todo = document.querySelector("ul");
 todo.addEventListener("click", function (ev) {
   if (ev.target.tagName === "LI") {
+    const index = Array.from(todo.children).indexOf(ev.target);
+    task[index].completed = !task[index].completed; // Toggle trạng thái completed
+    // Lưu trạng thái vào Local Storage
+    localStorage.setItem('tasks', JSON.stringify(task));
+    console.log(ev.target)
     ev.target.classList.toggle("checked");
   }
 });
@@ -24,9 +33,11 @@ const handleTaskAdd = () => {
   if (taskName.value.trim() === "") {
     alert("Please enter a task name");
   } else {
-    task.push(taskName.value);
+    const newTask = { name: taskName.value, completed: false }; // Tạo một công việc mới
+    task.push(newTask);
     taskName.value = "";
     renderTask(task);
+    localStorage.setItem('tasks', JSON.stringify(task));
   }
 };
 
@@ -42,7 +53,7 @@ const renderTask = (task) => {
   const taskName = [...task].pop();
   //   console.log(taskName);
   const newTask = `<li>
-  <span class="task-text">${taskName}</span>
+  <span class="task-text">${taskName.name}</span>
   <input type="text" class="task-input" style="display:none;" />
   <span class="delete">❌</span>
   <span class="edit">Edit</span>
@@ -52,17 +63,8 @@ const renderTask = (task) => {
   if (task) {
     document.getElementById("deleteAll").style.display = "block";
   }
-  let deleteTask = document.querySelectorAll(".delete");
-  let editTask = document.querySelectorAll(".edit");
-  editTask.forEach((editButton) => {
-    editButton.addEventListener("click", editTaskHandler);
-  });
-
-  deleteTask.forEach((deleteButton) => {
-    deleteButton.addEventListener("click", deleteTaskHandler);
-  });
-
-  
+  getElementAddEdit();
+ 
   //   todo = document.querySelectorAll("li");
   //   console.log(deleteTask);
   //   console.log(todo);
@@ -71,30 +73,21 @@ const deleteTaskHandler = (event) => {
   const liElement = event.target.parentElement;
   const index = Array.from(liElement.parentElement.children).indexOf(liElement);
   task.splice(index, 1);
+  localStorage.setItem('tasks', JSON.stringify(task));
   if(task.length === 0){
     document.getElementById("deleteAll").style.display = "none";
+    localStorage.clear()
   }
-  console.log(task);
+  // console.log(task);
   liElement.style.display = "none";
   
 };
-// const deleteEle = () => {
-//   if (deleteTask) {
-//     deleteTask.forEach((ele, index) => {
-//       ele.addEventListener("click", () => {
-//         task.splice(index, 1);
-//         //    console.log(task.length)
-//         let div = ele.parentElement;
-//         div.style.display = "none";
-//       });
-//     });
-//   }
-// };
-// console.log(deleteTask.length)
 
 const editTaskHandler = (event) => {
     const liElement = event.target.parentElement;
+    console.log(liElement)
     const taskText = liElement.querySelector(".task-text");
+    console.log(taskText.innerText)
     const taskInput = liElement.querySelector(".task-input");
     const editButton = liElement.querySelector(".edit");
   
@@ -102,8 +95,7 @@ const editTaskHandler = (event) => {
     taskInput.style.display = "inline-block";
     editButton.style.display = "none";
   
-    // taskInput.value = taskText.innerText;
-    taskInput.value = '';
+    taskInput.value = taskText.innerText;
     taskInput.focus();
   
     taskInput.addEventListener("keypress", (event) => {
@@ -112,6 +104,12 @@ const editTaskHandler = (event) => {
           taskInput.style.display = "none";
           editButton.style.display = "inline-block";
           taskText.innerText = taskInput.value;
+
+          // Cập nhật giá trị trong localStorage
+          const index = Array.from(liElement.parentElement.children).indexOf(liElement);
+          task[index].name = taskInput.value;
+          task[index].completed = false
+          localStorage.setItem('tasks', JSON.stringify(task));
         }
       });
 };
@@ -122,12 +120,34 @@ const deleteAll = () => {
   task = [];
   tasklist.innerHTML = "";
   document.getElementById("deleteAll").style.display = "none";
+  localStorage.clear();
 };
 
 
-
-
-
-
-
 ////////////////////////////////////////////
+//LOCAL STORAGE
+
+document.addEventListener("DOMContentLoaded", function(){
+  const storedTasks = localStorage.getItem('tasks');
+
+  if (storedTasks) {
+    task = JSON.parse(storedTasks);
+    task.forEach((taskItem,index)=>{
+      const newTask = `<li>
+      <span class="task-text">${taskItem.name}</span>
+      <input type="text" class="task-input" style="display:none;" />
+      <span class="delete">❌</span>
+      <span class="edit">Edit</span>
+        </li>
+        `;
+      tasklist.insertAdjacentHTML("beforeend", newTask);
+      if (taskItem.completed) {
+        const liElement = document.querySelectorAll('.list li')[index];
+        liElement.classList.add('checked');
+      }
+    })
+    document.getElementById("deleteAll").style.display = "block";
+    getElementAddEdit();
+  }
+});
+
